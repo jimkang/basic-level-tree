@@ -1,0 +1,34 @@
+{
+  "name": "basic-level-tree",
+  "version": "1.0.0",
+  "description": "A basic LevelDB-backed tree.",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:jimkang/basic-level-tree.git"
+  },
+  "keywords": [
+    "tree",
+    "database",
+    "leveldb"
+  ],
+  "author": "Jim Kang",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jimkang/basic-level-tree/issues"
+  },
+  "homepage": "https://github.com/jimkang/basic-level-tree",
+  "devDependencies": {
+    "rimraf": "^2.3.4",
+    "tape": "^4.0.0"
+  },
+  "dependencies": {
+    "call-next-tick": "^1.1.2",
+    "export-methods": "^1.1.0",
+    "level-sublevel": "^6.4.6",
+    "queue-async": "^1.0.7"
+  }
+}
