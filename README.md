@@ -11,7 +11,7 @@ Installation
 Usage
 -----
 
-    var levelup = require('levelup');
+    var level = require('level');
     var queue = require('queue-async');
     var createLevelTree = require('basic-level-tree');
 

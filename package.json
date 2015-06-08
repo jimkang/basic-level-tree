@@ -22,13 +22,15 @@
   },
   "homepage": "https://github.com/jimkang/basic-level-tree",
   "devDependencies": {
-    "rimraf": "^2.3.4",
+    "level": "^1.1.0",
+    "rimraf": "^2.4.0",
     "tape": "^4.0.0"
   },
   "dependencies": {
     "call-next-tick": "^1.1.2",
     "export-methods": "^1.1.0",
     "level-sublevel": "^6.4.6",
+    "lodash": "^3.9.3",
     "queue-async": "^1.0.7"
   }
 }
