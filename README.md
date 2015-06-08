@@ -33,33 +33,33 @@ Usage
 
       async.waterfall(
         [
-          addRoot,
-          addChildren,
-          addGrandchildren
+          addChild,
+          addGrandchildren,
+          addGreatGrandchildren
         ],
         passBackTree
       );
 
-      function addRoot(done) {
+      function addChild(done) {
         tree.addChild('root', 'Wart', done);
       }
 
-      function addChildren(root, done) {
+      function addGrandChildren(root, done) {
         var childQueue = queue();
-        childQueue.defer(root.addChild, 'child-A', 'Tryclyde');
-        childQueue.defer(root.addChild, 'child-B', 'Fryguy');
+        childQueue.defer(root.addChild, 'gc-A', 'Tryclyde');
+        childQueue.defer(root.addChild, 'gc-B', 'Fryguy');
         childQueue.await(done);
       }
 
-      function addGrandchildren(childA, childB, done) {
+      function addGreatGrandchildren(gcA, gcB, done) {
         var grandchildQueue = queue();
 
-        grandchildQueue.defer(childA.addChild, 'grandchildA-1', 'Cobrat');
-        grandchildQueue.defer(childA.addChild, 'grandchildA-2', 'Pokey');
-        grandchildQueue.defer(childA.addChild, 'grandchildA-3, 'Panser');
+        grandchildQueue.defer(gcA.addChild, 'grandchildA-1', 'Cobrat');
+        grandchildQueue.defer(gcA.addChild, 'grandchildA-2', 'Pokey');
+        grandchildQueue.defer(gcA.addChild, 'grandchildA-3, 'Panser');
 
-        grandchildQueue.defer(childB.addChild, 'grandchildB-1', 'Flurry');
-        grandchildQueue.defer(childB.addChild, 'grandchildB-2', 'Autobomb');
+        grandchildQueue.defer(gcB.addChild, 'grandchildB-1', 'Flurry');
+        grandchildQueue.defer(gcB.addChild, 'grandchildB-2', 'Autobomb');
 
         grandchildQueue.awaitAll(done);
       }

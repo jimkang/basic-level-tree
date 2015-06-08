@@ -29,7 +29,8 @@ function createLevelTree(opts) {
 
 function addChildToNode(parent, childName, childValue, done) {
   var child = {
-    value: childValue
+    value: childValue,
+    addChild: _.curry(addChildToNode)(child)
   };
 
   callNextTick(done, null, child);
