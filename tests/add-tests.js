@@ -34,7 +34,7 @@ var testCases = [
 ];
 
 test('Create tree', function treeTest(t) {
-  t.plan(1);
+  t.plan(2);
 
   createLevelTree(
     {
@@ -49,6 +49,7 @@ test('Create tree', function treeTest(t) {
   );
 
   function checkTree(error, root) {
+    t.ok(!error, 'No error while creating tree.');
     t.equal(typeof root, 'object');
     session.root = root;
   }
