@@ -10,19 +10,9 @@ var session = {};
   session.db = level(__dirname + '/test.db');
 })());
 
-
 var testCases = [
   {
-    parentKey: 'tree',
-    name: 'root',
-    value: {
-      name: 'Wart',
-      weakness: 'vegetables'
-    }
-  },
-  {
     parentKey: 'root',
-    name: 'gc-A',
     value: {
       name: 'Tryclyde',
       weakness: 'mushroom blocks'
@@ -30,7 +20,6 @@ var testCases = [
   },
   {
     parentKey: 'root',
-    name: 'gc-B',
     value: {
       name: 'Fryguy',
       weakness: 'mushroom blocks'
@@ -41,22 +30,40 @@ var testCases = [
 test('Create tree', function treeTest(t) {
   t.plan(1);
 
-  session.tree = createLevelTree({
-    db: session.db,
-    treeName: 'subcon'
-  });
+  createLevelTree(
+    {
+      db: session.db,
+      treeName: 'subcon',
+      root: {
+        name: 'Wart',
+        weakness: 'vegetables'
+      }
+    },
+    checkTree
+  );
 
-  t.equal(typeof session.tree, 'object');
+  function checkTree(error, root) {
+    t.equal(typeof root, 'object');
+    session.root = root;
+  }
 });
 
 testCases.forEach(runAddChildTest);
 
+test('Close db', function close(t) {
+  t.plan(1);
+
+  session.db.close(checkClose);
+
+  function checkClose(error) {
+    t.ok(!error, 'No error while closing database.');
+  }
+});
+
 function runAddChildTest(testCase) {
   test('Add ' + testCase.name, function addTest(t) {
     t.plan(3);
-
-    session[testCase.parentKey]
-      .addChild(testCase.name, testCase.value, checkAdd);
+    session[testCase.parentKey].addChild(testCase.value, checkAdd);
 
     function checkAdd(error, added) {
       t.ok(!error, 'No error while adding.');
@@ -64,8 +71,7 @@ function runAddChildTest(testCase) {
       t.deepEqual(
         added.value, testCase.value, 'Value is stored correctly for node.'
       );
-      session[testCase.name] = added;
+      session[testCase.value.name] = added;
     }
   });
 }
-
