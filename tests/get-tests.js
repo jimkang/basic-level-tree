@@ -3,6 +3,7 @@
 var test = require('tape');
 var createLevelTree = require('../index');
 var level = require('level');
+var callNextTick = require('call-next-tick');
 
 var session = {};
 
@@ -16,58 +17,75 @@ var session = {};
 })());
 
 var testData = {
-  root: {
+  'Wart': {
     value: {
       name: 'Wart',
       weakness: 'vegetables'
     },
-    keysOfExpectedChildren: [
-      'gc-A',
-      'gc-B'
+    sessionKeysOfExpectedChildren: [
+      'Tryclyde',
+      'Fryguy'
     ]
   },
-  'gc-A': {
+  'Tryclyde': {
     value: {
       name: 'Tryclyde',
       weakness: 'mushroom blocks'
     },
-    keysOfExpectedChildren: []
+    sessionKeysOfExpectedChildren: []
   },
-  'gc-B': {
+  'Fryguy': {
     value: {
       name: 'Fryguy',
       weakness: 'mushroom blocks'
     },
-    keysOfExpectedChildren: []
+    sessionKeysOfExpectedChildren: []
   }
 };
 
 test('Get tree', function treeTest(t) {
-  t.plan(1);
+  t.plan(3);
 
-  session.tree = createLevelTree({
-    db: session.db,
-    treeName: 'subcon'
-  });
+  createLevelTree(
+    {
+      db: session.db,
+      treeName: 'subcon'
+    },
+    checkTree
+  );
 
-  t.equal(typeof session.tree, 'object');
+  function checkTree(error, root) {
+    t.ok(!error, 'No error when getting tree.');
+    t.equal(typeof root, 'object');
+    t.deepEqual(root.value, testData.Wart.value, 'Root value got.');
+    session.root = root;
+
+    callNextTick(runGetChildTest, root);
+  }
 });
 
-// testCases.forEach(runGetChildTest);
+function runGetChildTest(node) {
+  var testDatum = testData[node.value.name];
 
-// function runGetChildTest(testCase) {
-//   test('Get ' + testCase.name, function getTest(t) {
-//     t.plan(3);
+  test('Get ' + node.value.name + ' children', function getTest(t) {
+    t.plan(testDatum.sessionKeysOfExpectedChildren.length + 3);
 
-//     session[testCase.parentKey].getChildren(checkGet);
+    t.equal(typeof node.getChildren, 'function', 'Has a getChildren method.');
+    node.getChildren(checkGet);
 
-//     function checkGet(error, children) {
-//       t.ok(!error, 'No error while getting.');
-//       t.equal(typeof children, 'object');
-//       var child = children[testCase.name];
-//       t.deepEqual(
-//         child.value, testCase.value, 'Value is retrieved for node.'
-//       );
-//     }
-//   });
-// }
+    function checkGet(error, children) {
+      t.ok(!error, 'No error while getting.');
+      t.equal(typeof children, 'object');
+
+      testDatum.sessionKeysOfExpectedChildren.forEach(checkChild);
+
+      function checkChild(key, i) {
+        var expectedChild = testData[key];
+        t.deepEqual(
+          children[i].value, expectedChild.value, 'Child is retrieved.'
+        );
+        callNextTick(runGetChildTest, children[i]);
+      }
+    }
+  });
+}

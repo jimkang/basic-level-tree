@@ -30,9 +30,9 @@ function createLevelTree(opts, done) {
   treeDb.get(rootId, checkForRoot);
 
   function checkForRoot(error, root) {
-    debugger;
     if (error && error.type === 'NotFoundError') {
       rootNode = {
+        id: rootId,
         value: opts.root,
         children: []
       };
@@ -45,7 +45,7 @@ function createLevelTree(opts, done) {
   }
 
   function packageRoot(error) {
-    attachMethodsToNode(rootId, rootNode);
+    attachMethodsToNode(rootNode);
 
     if (error) {
       done(error);
@@ -55,19 +55,20 @@ function createLevelTree(opts, done) {
     }
   }
 
-  function addChildToNode(parentId, parent, child, addDone) {
+  function addChildToNode(parent, child, addDone) {
     var childId = idmaker.randomId(8);
 
     var childNode = {
+      id: childId,
       value: child,
       children: []
     };
-    attachMethodsToNode(childId, childNode);
+    attachMethodsToNode(childNode);
 
     parent.children.push(childId);
 
     var q = queue();
-    q.defer(treeDb.put, parentId, parent);
+    q.defer(treeDb.put, parent.id, parent);
     q.defer(treeDb.put, childId, childNode);
     q.await(passBackChild);
 
@@ -82,13 +83,28 @@ function createLevelTree(opts, done) {
   }
 
   function getChildrenOfParent(parent, getDone) {
+    var q = queue(10);
+    parent.children.forEach(queueGet);
+    function queueGet(childKey) {
+      q.defer(treeDb.get, childKey);
+    }
+    q.awaitAll(attachMethodsToChildren);
 
+    function attachMethodsToChildren(error, children) {
+      if (error) {
+        getDone(error);
+      }
+      else {
+        children.forEach(attachMethodsToNode);
+        getDone(error, children);
+      }
+    }
   }
 
-  function attachMethodsToNode(keyId, node) {
-    node.addChild = _.curry(addChildToNode)(keyId)(node);
+  function attachMethodsToNode(node) {
+    node.addChild = _.curry(addChildToNode)(node);
+    node.getChildren = _.curry(getChildrenOfParent)(node);
   }
-
 }
 
 
