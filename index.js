@@ -45,8 +45,7 @@ function createLevelTree(opts, done) {
   }
 
   function packageRoot(error) {
-    debugger;
-    rootNode.addChild = _.curry(addChildToNode)(rootId)(rootNode);
+    attachMethodsToNode(rootId, rootNode);
 
     if (error) {
       done(error);
@@ -63,7 +62,7 @@ function createLevelTree(opts, done) {
       value: child,
       children: []
     };
-    childNode.addChild = _.curry(addChildToNode)(childNode);
+    attachMethodsToNode(childId, childNode);
 
     parent.children.push(childId);
 
@@ -81,6 +80,16 @@ function createLevelTree(opts, done) {
       }
     }
   }
+
+  function getChildrenOfParent(parent, getDone) {
+
+  }
+
+  function attachMethodsToNode(keyId, node) {
+    node.addChild = _.curry(addChildToNode)(keyId)(node);
+  }
+
 }
+
 
 module.exports = createLevelTree;
