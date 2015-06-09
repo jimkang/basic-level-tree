@@ -6,8 +6,14 @@ var level = require('level');
 var session = {};
 
 ((function prepare() {
-  rimraf.sync('test.db');
-  session.db = level(__dirname + '/test.db');
+  var dbPath = __dirname + '/test.db';
+  rimraf.sync(dbPath);
+  session.db = level(
+    dbPath,
+    {
+      valueEncoding: 'json'
+    }
+  );
 })());
 
 var testCases = [

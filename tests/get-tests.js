@@ -7,7 +7,12 @@ var level = require('level');
 var session = {};
 
 ((function prepare() {
-  session.db = level(__dirname + '/test.db');
+  session.db = level(
+    __dirname + '/test.db',
+    {
+      valueEncoding: 'json'
+    }
+  );
 })());
 
 var testData = {

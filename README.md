@@ -15,7 +15,14 @@ Usage
     var queue = require('queue-async');
     var createLevelTree = require('basic-level-tree');
 
-    var db = levelup('./a-tree.db');
+    var db = level(
+      './a-tree.db',
+      {
+        valueEncoding: 'json'
+      }
+    );
+
+    // Note: basic-level-tree will not work without valueEncoding set to 'json'.
 
     async.waterfall(
       [
