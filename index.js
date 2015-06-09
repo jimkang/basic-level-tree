@@ -24,22 +24,35 @@ function createLevelTree(opts, done) {
     return;
   }
 
-  var rootId = idmaker.randomId(8);
+  var rootId = 'root';
+  var rootNode;
 
-  var node = {
-    value: opts.root,
-    children: []
-  };
-  node.addChild = _.curry(addChildToNode)(rootId)(node);
+  treeDb.get(rootId, checkForRoot);
 
-  treeDb.put(rootId, node, passBackRoot);
+  function checkForRoot(error, root) {
+    debugger;
+    if (error && error.type === 'NotFoundError') {
+      rootNode = {
+        value: opts.root,
+        children: []
+      };
+      treeDb.put(rootId, rootNode, packageRoot);
+    }
+    else {
+      rootNode = root;
+      packageRoot(error);
+    }
+  }
 
-  function passBackRoot(error) {
+  function packageRoot(error) {
+    debugger;
+    rootNode.addChild = _.curry(addChildToNode)(rootId)(rootNode);
+
     if (error) {
       done(error);
     }
     else {
-      done(error, node);
+      done(error, rootNode);
     }
   }
 
@@ -52,7 +65,7 @@ function createLevelTree(opts, done) {
     };
     childNode.addChild = _.curry(addChildToNode)(childNode);
 
-    parent.children.push(childNode);
+    parent.children.push(childId);
 
     var q = queue();
     q.defer(treeDb.put, parentId, parent);
