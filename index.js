@@ -105,7 +105,7 @@ function createLevelTree(opts, done) {
   function attachMethodsToNode(node) {
     node.addChild = _.curry(addChildToNode)(node);
     node.getChildren = _.curry(getChildrenOfParent)(node);
-    node.getChildAtPath = _.curry(getChildAtPath)(node);
+    node.getChildAtPath = _.curry(getChildAtPath)(treeDb)(node);
   }
 }
 
