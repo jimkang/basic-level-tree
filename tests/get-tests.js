@@ -4,6 +4,7 @@ var test = require('tape');
 var createLevelTree = require('../index');
 var level = require('level');
 var callNextTick = require('call-next-tick');
+var _ = require('lodash');
 
 var session = {};
 
@@ -32,12 +33,54 @@ var testData = {
       name: 'Tryclyde',
       weakness: 'mushroom blocks'
     },
-    sessionKeysOfExpectedChildren: []
+    sessionKeysOfExpectedChildren: [
+      'Cobrat',
+      'Pokey',
+      'Panser'
+    ]
   },
   'Fryguy': {
     value: {
       name: 'Fryguy',
       weakness: 'mushroom blocks'
+    },
+    sessionKeysOfExpectedChildren: [
+      'Flurry',
+      'Autobomb'
+    ]
+  },
+  'Cobrat': {
+    value: {
+      name: 'Cobrat',
+      weakness: 'turnips'
+    },
+    sessionKeysOfExpectedChildren: []
+  },
+  'Pokey': {
+    value: {
+      name: 'Pokey',
+      weakness: 'Pokey heads'
+    },
+    sessionKeysOfExpectedChildren: []
+  },
+  'Panser': {
+    value: {
+      name: 'Panser',
+      weakness: 'turtle shells'
+    },
+    sessionKeysOfExpectedChildren: []
+  },
+  'Flurry': {
+    value: {
+      name: 'Flurry',
+      weakness: 'carrots'
+    },
+    sessionKeysOfExpectedChildren: []
+  },
+  'Autobomb': {
+    value: {
+      name: 'Autobomb',
+      weakness: 'Flurry'
     },
     sessionKeysOfExpectedChildren: []
   }
@@ -68,24 +111,25 @@ function runGetChildTest(node) {
   var testDatum = testData[node.value.name];
 
   test('Get ' + node.value.name + ' children', function getTest(t) {
-    t.plan(testDatum.sessionKeysOfExpectedChildren.length + 3);
+    t.plan(5);
 
     t.equal(typeof node.getChildren, 'function', 'Has a getChildren method.');
+    t.deepEqual(node.value, testDatum.value, 'Node value is correct.');
+
     node.getChildren(checkGet);
 
     function checkGet(error, children) {
       t.ok(!error, 'No error while getting.');
       t.equal(typeof children, 'object');
 
-      testDatum.sessionKeysOfExpectedChildren.forEach(checkChild);
+      var childNames = _.pluck(_.pluck(children, 'value'), 'name');
+      t.deepEqual(
+        childNames,
+        testDatum.sessionKeysOfExpectedChildren,
+        'Children`s names are correct.'
+      );
 
-      function checkChild(key, i) {
-        var expectedChild = testData[key];
-        t.deepEqual(
-          children[i].value, expectedChild.value, 'Child is retrieved.'
-        );
-        callNextTick(runGetChildTest, children[i]);
-      }
+      children.forEach(runGetChildTest);
     }
   });
 }
