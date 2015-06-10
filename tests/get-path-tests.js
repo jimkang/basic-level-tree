@@ -62,7 +62,7 @@ function runPathTest(testCase) {
       t.ok(!error, 'No error while getting from path.');
       t.deepEqual(
         node.value,
-        testData.get(expectedTestDataKey).value,
+        testData.get(testCase.expectedTestDataKey).value,
         'Correct child is retrieved.'
       );
     }
