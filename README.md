@@ -84,7 +84,12 @@ Usage
     }
 
     function readFromTree(tree, done) {
-      tree.getChildValuesDeep(['Wart', 'child-B'], done);      
+      tree.getSubtree(
+        {
+          treePath: ['Wart', 'child-B']
+        },
+        done
+      );
     }
 
     function logSubtree(error, subtree) {
