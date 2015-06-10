@@ -33,32 +33,34 @@ Usage
     );
 
     function populateSMB2Tree(populateDone) {
-      var tree = createLevelTree({
-        db: db,
-        treeName: 'subcon'
-      });
-
       async.waterfall(
         [
-          addChild,
-          addGrandchildren,
-          addGreatGrandchildren
+          setUpTree,
+          addChildren,
+          addGrandchildren
         ],
         passBackTree
       );
 
-      function addChild(done) {
-        tree.addChild('root', 'Wart', done);
+      function setUpTree(done) {
+        createLevelTree(
+          {
+            db: db,
+            treeName: 'subcon',
+            root: 'Wart'
+          },
+          done
+        );
       }
 
-      function addGrandChildren(root, done) {
+      function addChildren(root, done) {
         var childQueue = queue();
         childQueue.defer(root.addChild, 'gc-A', 'Tryclyde');
         childQueue.defer(root.addChild, 'gc-B', 'Fryguy');
         childQueue.await(done);
       }
 
-      function addGreatGrandchildren(gcA, gcB, done) {
+      function addGrandchildren(gcA, gcB, done) {
         var grandchildQueue = queue();
 
         grandchildQueue.defer(gcA.addChild, 'grandchildA-1', 'Cobrat');
