@@ -30,7 +30,45 @@ var testCases = [
       name: 'Fryguy',
       weakness: 'mushroom blocks'
     }
+  },
+
+  {
+    parentKey: 'Tryclyde',
+    value: {
+      name: 'Cobrat',
+      weakness: 'turnips'
+    }
+  },
+  {
+    parentKey: 'Tryclyde',
+    value: {
+      name: 'Pokey',
+      weakness: 'Pokey heads'
+    }
+  },
+  {
+    parentKey: 'Tryclyde',
+    value: {
+      name: 'Panser',
+      weakness: 'turtle shells'
+    }
+  },
+
+  {
+    parentKey: 'Fryguy',
+    value: {
+      name: 'Flurry',
+      weakness: 'carrots'
+    }
+  },
+  {
+    parentKey: 'Fryguy',
+    value: {
+      name: 'Autobomb',
+      weakness: 'Flurry'
+    }
   }
+
 ];
 
 test('Create tree', function treeTest(t) {
