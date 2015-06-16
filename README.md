@@ -84,7 +84,7 @@ Usage
     }
 
     function readFromTree(tree, done) {
-      tree.getSubtree(
+      tree.getSubtreeAtPath(
         {
           treePath: ['Wart', 'child-B']
         },

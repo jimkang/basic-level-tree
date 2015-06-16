@@ -4,6 +4,7 @@ var Sublevel = require('level-sublevel');
 var idmaker = require('idmaker');
 var queue = require('queue-async');
 var getChildAtPath = require('./get-child-at-path');
+var getSubtree = require('./get-subtree');
 
 function createLevelTree(opts, done) {
   var treeDb;
@@ -106,6 +107,7 @@ function createLevelTree(opts, done) {
     node.addChild = _.curry(addChildToNode)(node);
     node.getChildren = _.curry(getChildrenOfParent)(node);
     node.getChildAtPath = _.curry(getChildAtPath)(treeDb)(node);
+    node.getSubtree = _.curry(getSubtree)(node);
   }
 }
 
