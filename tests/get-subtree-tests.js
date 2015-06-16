@@ -9,31 +9,31 @@ var fullTree = {
   value: testData.get('Wart').value,
   children: [
     {
-      value: testData.get('Tryclyde'),
+      value: testData.get('Tryclyde').value,
       children: [
         {
-          value: testData.get('Cobrat'),
+          value: testData.get('Cobrat').value,
           children: []
         },
         {
-          value: testData.get('Pokey'),
+          value: testData.get('Pokey').value,
           children: []
         },
         {
-          value: testData.get('Panser'),
+          value: testData.get('Panser').value,
           children: []
         },
       ]
     },
     {
-      value: testData.get('Fryguy'),
+      value: testData.get('Fryguy').value,
       children: [
         {
-          value: testData.get('Flurry'),
+          value: testData.get('Flurry').value,
           children: []
         },
         {
-          value: testData.get('Autobomb'),
+          value: testData.get('Autobomb').value,
           children: []
         }
       ]
@@ -92,7 +92,6 @@ function runSubtreeTest(testCase) {
     function subtreeTest(t) {
       t.plan(3);
 
-      // session.root.getSubtree(testCase.path, checkResult);
       session.root.getChildAtPath(testCase.path, getChildSubtree);
 
       function getChildSubtree(error, child) {
@@ -101,6 +100,8 @@ function runSubtreeTest(testCase) {
       }
 
       function checkResult(error, subtree) {
+        // console.log('subtree:');
+        // console.log(JSON.stringify(subtree, null, '  '));
         t.ok(!error, 'No error while getting subtree from node.');
         t.deepEqual(
           subtree,
