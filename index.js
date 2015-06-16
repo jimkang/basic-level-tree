@@ -104,7 +104,6 @@ function createLevelTree(opts, done) {
   }
 
   function getSubtreeAtPath(node, path, getSubtreeDone) {
-    debugger;
     node.getChildAtPath(path, getChildSubtree);
 
     function getChildSubtree(error, child) {

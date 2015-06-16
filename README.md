@@ -1,7 +1,7 @@
 basic-level-tree
 ================
 
-A basic LevelDB-backed key-value tree. It's got nodes and children and stuff.
+A basic LevelDB-backed key-value tree. You can add nodes to your tree, and they will persist to a database.
 
 Installation
 ------------
@@ -11,8 +11,71 @@ Installation
 Usage
 -----
 
+Assuming a tree that looked like this:
+
+    {
+      "value": {
+        "name": "Wart",
+        "weakness": "vegetables"
+      },
+      "children": [
+        {
+          "value": {
+            "name": "Tryclyde",
+            "weakness": "mushroom blocks"
+          },
+          "children": [
+            {
+              "value": {
+                "name": "Cobrat",
+                "weakness": "turnips"
+              },
+              "children": []
+            },
+            {
+              "value": {
+                "name": "Pokey",
+                "weakness": "Pokey heads"
+              },
+              "children": []
+            },
+            {
+              "value": {
+                "name": "Panser",
+                "weakness": "turtle shells"
+              },
+              "children": []
+            }
+          ]
+        },
+        {
+          "value": {
+            "name": "Fryguy",
+            "weakness": "mushroom blocks"
+          },
+          "children": [
+            {
+              "value": {
+                "name": "Flurry",
+                "weakness": "carrots"
+              },
+              "children": []
+            },
+            {
+              "value": {
+                "name": "Autobomb",
+                "weakness": "Flurry"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+
+You can retrieve subtrees by specifying the path you want to take through the tree in an array:
+
     var level = require('level');
-    var queue = require('queue-async');
     var createLevelTree = require('basic-level-tree');
 
     var db = level(
@@ -21,75 +84,18 @@ Usage
         valueEncoding: 'json'
       }
     );
-
     // Note: basic-level-tree will not work without valueEncoding set to 'json'.
 
-    async.waterfall(
-      [
-        populateSMB2Tree,
-        readFromTree
-      ],
-      logSubtree
+    createLevelTree(
+      {
+        db: db,
+        treeName: 'subcon'
+      },
+      readFromTree
     );
 
-    function populateSMB2Tree(populateDone) {
-      async.waterfall(
-        [
-          setUpTree,
-          addChildren,
-          addGrandchildren
-        ],
-        passBackTree
-      );
-
-      function setUpTree(done) {
-        createLevelTree(
-          {
-            db: db,
-            treeName: 'subcon',
-            root: 'Wart'
-          },
-          done
-        );
-      }
-
-      function addChildren(root, done) {
-        var childQueue = queue();
-        childQueue.defer(root.addChild, 'gc-A', 'Tryclyde');
-        childQueue.defer(root.addChild, 'gc-B', 'Fryguy');
-        childQueue.await(done);
-      }
-
-      function addGrandchildren(gcA, gcB, done) {
-        var grandchildQueue = queue();
-
-        grandchildQueue.defer(gcA.addChild, 'grandchildA-1', 'Cobrat');
-        grandchildQueue.defer(gcA.addChild, 'grandchildA-2', 'Pokey');
-        grandchildQueue.defer(gcA.addChild, 'grandchildA-3, 'Panser');
-
-        grandchildQueue.defer(gcB.addChild, 'grandchildB-1', 'Flurry');
-        grandchildQueue.defer(gcB.addChild, 'grandchildB-2', 'Autobomb');
-
-        grandchildQueue.awaitAll(done);
-      }
-
-      function passBackTree(error) {
-        if (error) {
-          done(error);
-        }
-        else {
-          done(error, tree);
-        }
-      }
-    }
-
     function readFromTree(tree, done) {
-      tree.getSubtreeAtPath(
-        {
-          treePath: ['Wart', 'child-B']
-        },
-        done
-      );
+      tree.getSubtreeAtPath(['Fryguy'], logSubtree);
     }
 
     function logSubtree(error, subtree) {
@@ -104,25 +110,68 @@ Usage
 Output:
 
     {
-      'child-b': {
-        value: 'Tryclyde',
-        children: {
-          'grandchildB-1': {
-            value: 'Flurry'
+      "value": {
+        "name": "Fryguy",
+        "weakness": "mushroom blocks"
+      },
+      "children": [
+        {
+          "value": {
+            "name": "Flurry",
+            "weakness": "carrots"
           },
-          'grandchildB-2': {
-            value: 'Autobomb'
-          }
-        ]
-      }
+          "children": []
+        },
+        {
+          "value": {
+            "name": "Autobomb",
+            "weakness": "Flurry"
+          },
+          "children": []
+        }
+      ]
     }
 
-That's a pretty cumbersome example, but hopefully, the common use case for this is simpler: Adding children as a traversal of some structure necessitates that. If not, TODO: make this less busy.
+Check out [add-tests.js](https://github.com/jimkang/basic-level-tree/blob/master/tests/add-tests.js#L111) for an example of how to populate the tree.
+
+API
+---
+
+**createLevelTree(opts, done)** - Creates a level-tree and passes back the root node to you. opts object takes:
+
+- `db`: An open [levelup](https://github.com/Level/levelup) database instance, commonly created by calling the [ctor](https://github.com/Level/levelup#ctor).
+- `treeName`: The name of your tree. Internally, it uses this to prevent name clashes with other trees you may have stored in your database.
+- `root`: The value of the root. If you've already created your tree, this is ignored. If you haven't, it uses this to create the root of your tree.
+
+Every node in the tree has these methods:
+
+**addChild(child, done)** - Adds a child to the node and passes it back to you via the `done` callback. The `child` can be an object, a string, or anything that can be serialized to JSON.
+
+Right now, `basic-level-tree` does not have a convenient way to add a lot of nodes at once. I'm using it to build a tree as I parse data, one node at a time. However, if you need to add a lot of data at once, please create an issue or submit a pull request!
+
+Every node in the tree has a `value` property. It is the `child` you passed to `addChild`.
+
+**getChildren(done)** - Passes back to you the child nodes of the current node.
+
+**getChildAtPath(path, done)** - Traverses the tree starting at the current node along the specified path and returns the node at the end. In the example tree above, if you had the root node, which has a value with the name "Wart" and wanted to get its grandchild node with the value with the name "Pokey", you could call `getChildPath` using the path `['Tryclyde', 'Pokey']. The method will visit Wart's child Tryclyde, then visit Tryclyde's child Pokey.
+
+**getSubtree(done)** - Returns a representation of the subtree that has the current node at its root. The representation is a plain JavaScript object that has nodes each containing a `value` and `children`. There are no methods in this representation.
+
+**getSubtreeAtPath(done)** - On your behalf, this method calls `getChildAtPath`, then calls `getSubtree` on that child. It's used in the [usage example](https://github.com/jimkang/basic-level-tree#usage) at the top.
+
+Right now, there's no way to update or delete nodes. If you want one, please create an issue or a pull request!
 
 Tests
 -----
 
 Run tests with `make test`.
+
+Contributing
+------------
+
+- Please add tests for anything you change and add commands to run them to the `test` target in the Makefile.
+- Follow the existing style.
+- Avoid prototypal inheritance so that methods can be passed around with `bind`, unless you have a very strong reason to use it.
 
 License
 -------
