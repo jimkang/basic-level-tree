@@ -103,11 +103,26 @@ function createLevelTree(opts, done) {
     }
   }
 
+  function getSubtreeAtPath(node, path, getSubtreeDone) {
+    debugger;
+    node.getChildAtPath(path, getChildSubtree);
+
+    function getChildSubtree(error, child) {
+      if (error) {
+        getSubtreeDone(error);
+      }
+      else {
+        child.getSubtree(getSubtreeDone);
+      }
+    }
+  }
+
   function attachMethodsToNode(node) {
     node.addChild = _.curry(addChildToNode)(node);
     node.getChildren = _.curry(getChildrenOfParent)(node);
     node.getChildAtPath = _.curry(getChildAtPath)(treeDb)(node);
     node.getSubtree = _.curry(getSubtree)(node);
+    node.getSubtreeAtPath = _.curry(getSubtreeAtPath)(node);
   }
 }
 

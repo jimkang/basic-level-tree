@@ -86,9 +86,10 @@ test('Get root.', function getRoot(t) {
 });
 
 subtreeTestCases.forEach(runSubtreeTest);
+subtreeTestCases.forEach(runSubtreeAtPathTest);
 
 function runSubtreeTest(testCase) {
-  test('Get subtree at path ' + testCase.path.join('/'),
+  test('Get subtree ' + testCase.path.join('/'),
     function subtreeTest(t) {
       t.plan(3);
 
@@ -107,6 +108,25 @@ function runSubtreeTest(testCase) {
           subtree,
           testCase.expectedTree,
           'Correct subtree is retrieved.'
+        );
+      }
+    }
+  );
+}
+
+function runSubtreeAtPathTest(testCase) {
+  test('Get subtree at path ' + testCase.path.join('/'),
+    function subtreeAtPathTest(t) {
+      t.plan(2);
+
+      session.root.getSubtreeAtPath(testCase.path, checkResult);
+
+      function checkResult(error, subtree) {
+        t.ok(!error, 'No error while getting subtree from node at path.');
+        t.deepEqual(
+          subtree,
+          testCase.expectedTree,
+          'Correct subtree is retrieved from path.'
         );
       }
     }
