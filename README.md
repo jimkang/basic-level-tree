@@ -171,7 +171,7 @@ Contributing
 
 - Please add tests for anything you change and add commands to run them to the `test` target in the Makefile.
 - Follow the existing style.
-- Avoid prototypal inheritance so that methods can be passed around with `bind`, unless you have a very strong reason to use it.
+- Avoid prototypal inheritance so that methods can be passed around without needing `bind`, unless you have a very strong reason to use it.
 
 License
 -------
