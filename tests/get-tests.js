@@ -3,7 +3,7 @@ var createLevelTree = require('../index');
 var level = require('level');
 var callNextTick = require('call-next-tick');
 var _ = require('lodash');
-var testData = require('./get-test-data');
+var testData = require('./fixtures/get-test-data');
 var populateFreshDb = require('./fixtures/populate-fresh-db');
 
 var session = {};
