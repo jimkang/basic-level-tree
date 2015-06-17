@@ -119,6 +119,34 @@ test('Add if not already there.', function addChildIfNotThere(t) {
   }
 });
 
+test('Default to deepEqual in addChildIfNotThere.', function defaultEq(t) {
+  t.plan(3);
+
+  var numberOfChildren = session['Fryguy'].children.length;
+  var newValue = {
+    name: 'Flurry',
+    weakness: 'fire'
+  };
+
+  session['Fryguy'].addChildIfNotThere(
+    {
+      value: newValue
+      // No equalityFn specified.
+    },
+    checkAdd
+  );
+
+  function checkAdd(error, result) {
+    t.ok(!error, 'No error while adding.');
+    t.deepEqual(result.value, newValue, 'New value is returned.');
+    t.equal(
+      session['Fryguy'].children.length,
+      numberOfChildren + 1,
+      'Number of children increases by 1.'
+    );
+  }
+});
+
 test('Close db', function close(t) {
   t.plan(1);
 

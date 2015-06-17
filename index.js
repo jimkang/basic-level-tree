@@ -125,6 +125,10 @@ function createLevelTree(opts, done) {
       equalityFn = opts.equalityFn;
     }
 
+    if (!equalityFn) {
+      equalityFn = _.isEqual;
+    }
+
     parent.getChildren(checkChildrenForMatch);
 
     function checkChildrenForMatch(error, children) {

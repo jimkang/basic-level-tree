@@ -1,6 +1,6 @@
 {
   "name": "basic-level-tree",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A basic LevelDB-backed tree.",
   "main": "index.js",
   "scripts": {

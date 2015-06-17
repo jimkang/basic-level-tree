@@ -145,11 +145,15 @@ API
 
 Every node in the tree has these methods:
 
-**addChild(child, done)** - Adds a child to the node and passes it back to you via the `done` callback. The `child` can be an object, a string, or anything that can be serialized to JSON.
+**addChild(childValue, done)** - Adds a child to the node and passes it back to you via the `done` callback. The `childValue` can be an object, a string, or anything that can be serialized to JSON.
 
 Right now, `basic-level-tree` does not have a convenient way to add a lot of nodes at once. I'm using it to build a tree as I parse data, one node at a time. However, if you need to add a lot of data at once, please create an issue or submit a pull request!
 
 Every node in the tree has a `value` property. It is the `child` you passed to `addChild`.
+
+**addChildIfNotThere(opts, done)** - opts include `value`, the value of the child you are potentially adding and `equalityFn`, a function that takes two values and tells `addChildIfNotThere` if they are equal. If `equalityFn` is not specified, it will default to `_.isEqual`, a deep equality predicate.
+
+If it finds that child already exists as defined by `equalityFn`, then it will pass back that existing child and instead of adding anything. If it does not exist, then it calls `addChild`.
 
 **getChildren(done)** - Passes back to you the child nodes of the current node.
 
