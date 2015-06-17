@@ -1,23 +1,33 @@
-// NOTE: Depends on add-tests having been run on the database.
-
 var test = require('tape');
 var createLevelTree = require('../index');
 var level = require('level');
 var callNextTick = require('call-next-tick');
 var _ = require('lodash');
 var testData = require('./get-test-data');
+var populateFreshDb = require('./fixtures/populate-fresh-db');
 
 var session = {};
 
-((function prepare() {
-  session.db = level(
-    __dirname + '/test.db',
-    {
-      valueEncoding: 'json'
-    }
-  );
-})());
+test('Prepare', function prepare(t) {
+  t.plan(1);
 
+  populateFreshDb(checkPopulate);
+
+  function checkPopulate(error) {
+    if (error) {
+      console.log('Populate error:', error);
+    }
+
+    session.db = level(
+      __dirname + '/test.db',
+      {
+        valueEncoding: 'json'
+      }
+    );
+
+    t.ok(!error, 'No error while preparing db for tests.');
+  }
+});
 
 test('Get tree', function treeTest(t) {
   t.plan(3);
