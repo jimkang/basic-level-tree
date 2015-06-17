@@ -95,16 +95,6 @@ test('Create tree', function treeTest(t) {
 
 testCases.forEach(runAddChildTest);
 
-test('Close db', function close(t) {
-  t.plan(1);
-
-  session.db.close(checkClose);
-
-  function checkClose(error) {
-    t.ok(!error, 'No error while closing database.');
-  }
-});
-
 function runAddChildTest(testCase) {
   test('Add ' + testCase.name, function addTest(t) {
     t.plan(3);
@@ -120,3 +110,75 @@ function runAddChildTest(testCase) {
     }
   });
 }
+
+test('Do not add again if already there.', function doNotAddIfAlreadyThere(t) {
+  t.plan(3);
+
+  var numberOfChildren = session['Fryguy'].children.length;
+
+  session['Fryguy'].addChildIfNotThere(
+    {
+      value: {
+        name: 'Flurry',
+        weakness: 'fire'
+      },
+      equalityFn: function hasSameName(a, b) {
+        return a.name === b.name;
+      }
+    },
+    checkAdd
+  );
+
+  function checkAdd(error, result) {
+    t.ok(!error, 'No error while adding.');
+    t.deepEqual(
+      result.value, testCases[5].value, 'Existing value is returned.'
+    );
+    t.equal(
+      session['Fryguy'].children.length,
+      numberOfChildren,
+      'Number of children remains the same.'
+    );
+  }
+});
+
+
+test('Add if not already there.', function addChildIfNotThere(t) {
+  t.plan(3);
+
+  var numberOfChildren = session['Fryguy'].children.length;
+  var newValue = {
+    name: 'Shyguy',
+    weakness: 'cliffs'
+  };
+
+  session['Fryguy'].addChildIfNotThere(
+    {
+      value: newValue,
+      equalityFn: function hasSameName(a, b) {
+        return a.name === b.name;
+      }
+    },
+    checkAdd
+  );
+
+  function checkAdd(error, result) {
+    t.ok(!error, 'No error while adding.');
+    t.deepEqual(result.value, newValue, 'New value is returned.');
+    t.equal(
+      session['Fryguy'].children.length,
+      numberOfChildren + 1,
+      'Number of children increases by 1.'
+    );
+  }
+});
+
+test('Close db', function close(t) {
+  t.plan(1);
+
+  session.db.close(checkClose);
+
+  function checkClose(error) {
+    t.ok(!error, 'No error while closing database.');
+  }
+});

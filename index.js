@@ -57,12 +57,12 @@ function createLevelTree(opts, done) {
     }
   }
 
-  function addChildToNode(parent, child, addDone) {
+  function addChildToNode(parent, childValue, addDone) {
     var childId = idmaker.randomId(8);
 
     var childNode = {
       id: childId,
-      value: child,
+      value: childValue,
       children: []
     };
     attachMethodsToNode(childNode);
@@ -116,8 +116,40 @@ function createLevelTree(opts, done) {
     }
   }
 
+  function addChildIfNotThere(parent, opts, addDone) {
+    var childValue;
+    var equalityFn;
+
+    if (opts) {
+      childValue = opts.value;
+      equalityFn = opts.equalityFn;
+    }
+
+    parent.getChildren(checkChildrenForMatch);
+
+    function checkChildrenForMatch(error, children) {
+      if (error) {
+        addDone(error);
+      }
+      else {
+        var existingChild = _.find(children, hasValueEqualToValueToAdd);
+        if (existingChild) {
+          addDone(null, existingChild);
+        }
+        else {
+          parent.addChild(childValue, addDone);
+        }
+      }
+    }
+
+    function hasValueEqualToValueToAdd(child) {
+      return equalityFn(child.value, childValue);
+    }
+  }
+
   function attachMethodsToNode(node) {
     node.addChild = _.curry(addChildToNode)(node);
+    node.addChildIfNotThere = _.curry(addChildIfNotThere)(node);
     node.getChildren = _.curry(getChildrenOfParent)(node);
     node.getChildAtPath = _.curry(getChildAtPath)(treeDb)(node);
     node.getSubtree = _.curry(getSubtree)(node);
