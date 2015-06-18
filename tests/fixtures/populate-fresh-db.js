@@ -8,7 +8,7 @@ var session = {};
 
 function populateFreshDb(populateDone) {
   var dbPath = __dirname + '/../test.db';
-  console.log(dbPath);
+
   rimraf.sync(dbPath);
   session.db = level(
     dbPath,
