@@ -163,7 +163,9 @@ If it finds that child already exists as defined by `equalityFn`, then it will p
 
 **getSubtreeAtPath(done)** - On your behalf, this method calls `getChildAtPath`, then calls `getSubtree` on that child. It's used in the [usage example](https://github.com/jimkang/basic-level-tree#usage) at the top.
 
-Right now, there's no way to update or delete nodes. If you want one, please create an issue or a pull request!
+**save(done)** - This will persist any changes you make to the node. I recommend you only mess with the `value`, but hey, I'm not your dad. (Unless you are Anderson. Ohay guy!)
+
+Right now, there's no way to delete nodes. If you want one, please create an issue or a pull request!
 
 Tests
 -----

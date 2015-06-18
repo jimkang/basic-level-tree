@@ -151,6 +151,10 @@ function createLevelTree(opts, done) {
     }
   }
 
+  function saveNode(node, saveDone) {
+    treeDb.put(node.id, node, saveDone);
+  }
+
   function attachMethodsToNode(node) {
     node.addChild = _.curry(addChildToNode)(node);
     node.addChildIfNotThere = _.curry(addChildIfNotThere)(node);
@@ -158,8 +162,8 @@ function createLevelTree(opts, done) {
     node.getChildAtPath = _.curry(getChildAtPath)(treeDb)(node);
     node.getSubtree = _.curry(getSubtree)(node);
     node.getSubtreeAtPath = _.curry(getSubtreeAtPath)(node);
+    node.save = _.curry(saveNode)(node);
   }
 }
-
 
 module.exports = createLevelTree;
