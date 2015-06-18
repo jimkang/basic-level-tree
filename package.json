@@ -22,6 +22,7 @@
   },
   "homepage": "https://github.com/jimkang/basic-level-tree",
   "devDependencies": {
+    "async": "^1.2.1",
     "immutable": "^3.7.3",
     "level": "^1.1.0",
     "rimraf": "^2.4.0",

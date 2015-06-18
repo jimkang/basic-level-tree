@@ -3,6 +3,8 @@ var createLevelTree = require('../index');
 var level = require('level');
 var testData = require('./fixtures/get-test-data');
 var populateFreshDb = require('./fixtures/populate-fresh-db');
+var getDbAndRoot = require('./fixtures/get-db-and-root');
+var async = require('async');
 
 var fullTree = {
   value: testData.get('Wart').value,
@@ -61,38 +63,16 @@ var session = {};
 test('Prepare', function prepare(t) {
   t.plan(1);
 
-  populateFreshDb(checkPopulate);
+  async.waterfall([populateFreshDb, getDbAndRoot], saveDbAndRoot);
 
-  function checkPopulate(error) {
+  function saveDbAndRoot(error, db, root) {
     if (error) {
-      console.log('Populate error:', error);
+      console.log('Setup error:', error);
     }
 
-    session.db = level(
-      __dirname + '/test.db',
-      {
-        valueEncoding: 'json'
-      }
-    );
-
-    t.ok(!error, 'No error while preparing db for tests.');
-  }
-});
-
-test('Get root.', function getRoot(t) {
-  t.plan(1);
-
-  createLevelTree(
-    {
-      db: session.db,
-      treeName: 'subcon'
-    },
-    saveRoot
-  );
-
-  function saveRoot(error, root) {
-    t.ok(!error, 'No error while getting tree.');
+    session.db = db;
     session.root = root;
+    t.ok(!error, 'No error while setting up for tests.');
   }
 });
 
