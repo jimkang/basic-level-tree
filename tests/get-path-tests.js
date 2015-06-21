@@ -55,3 +55,23 @@ function runPathTest(testCase) {
     }
   });
 }
+
+var badPaths = [
+  ['Bowser'],
+  ['Tryclyde', 'Trouter']
+];
+
+badPaths.forEach(runBadPathTest);
+
+function runBadPathTest(badPath) {
+  test('Handle bad path ' + badPath.join('/'), function getBadPathTest(t) {
+    t.plan(2);
+
+    session.root.getChildAtPath(badPath, checkResult);
+
+    function checkResult(error, node) {
+      t.ok(!error, 'No error while getting from path.');
+      t.equal(node, undefined, 'undefined is retrieved.');
+    }
+  });
+}
