@@ -121,3 +121,23 @@ function runSubtreeAtPathTest(testCase) {
     }
   );
 }
+
+var badPaths = [
+  ['Bowser'],
+  ['Tryclyde', 'Trouter']
+];
+
+badPaths.forEach(runBadPathTest);
+
+function runBadPathTest(badPath) {
+  test('Handle bad path ' + badPath.join('/'), function getBadPathTest(t) {
+    t.plan(2);
+
+    session.root.getSubtreeAtPath(badPath, checkResult);
+
+    function checkResult(error, subtree) {
+      t.ok(!error, 'No error while getting from path.');
+      t.equal(subtree, undefined, 'undefined is retrieved.');
+    }
+  });
+}

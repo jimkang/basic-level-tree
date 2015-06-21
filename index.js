@@ -110,6 +110,9 @@ function createLevelTree(opts, done) {
       if (error) {
         getSubtreeDone(error);
       }
+      else if (!child) {
+        getSubtreeDone(error, child);
+      }
       else {
         child.getSubtree(getSubtreeDone);
       }
