@@ -1,8 +1,10 @@
+/* global __dirname */
+
 var test = require('tape');
 var createLevelTree = require('../index');
 var level = require('level');
 var callNextTick = require('call-next-tick');
-var _ = require('lodash');
+var pluck = require('lodash.pluck');
 var testData = require('./fixtures/get-test-data');
 var populateFreshDb = require('./fixtures/populate-fresh-db');
 
@@ -18,12 +20,9 @@ test('Prepare', function prepare(t) {
       console.log('Populate error:', error);
     }
 
-    session.db = level(
-      __dirname + '/test.db',
-      {
-        valueEncoding: 'json'
-      }
-    );
+    session.db = level(__dirname + '/test.db', {
+      valueEncoding: 'json'
+    });
 
     t.ok(!error, 'No error while preparing db for tests.');
   }
@@ -65,7 +64,7 @@ function runGetChildTest(node) {
       t.ok(!error, 'No error while getting.');
       t.equal(typeof children, 'object');
 
-      var childNames = _.pluck(_.pluck(children, 'value'), 'name');
+      var childNames = pluck(pluck(children, 'value'), 'name');
       t.deepEqual(
         childNames,
         testDatum.sessionKeysOfExpectedChildren,
@@ -76,4 +75,3 @@ function runGetChildTest(node) {
     }
   });
 }
-

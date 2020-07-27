@@ -1,5 +1,6 @@
-var exportMethods = require('export-methods');
-var _ = require('lodash');
+var curry = require('lodash.curry');
+var isEqual = require('lodash.isequal');
+var find = require('lodash.find');
 var Sublevel = require('level-sublevel');
 var idmaker = require('idmaker');
 var queue = require('queue-async');
@@ -7,7 +8,6 @@ var getChildAtPath = require('./get-child-at-path');
 var getSubtree = require('./get-subtree');
 
 function createLevelTree(opts, done) {
-  var treeDb;
   var treeName;
 
   if (opts) {
@@ -39,8 +39,7 @@ function createLevelTree(opts, done) {
         children: []
       };
       treeDb.put(rootId, rootNode, packageRoot);
-    }
-    else {
+    } else {
       rootNode = root;
       packageRoot(error);
     }
@@ -51,8 +50,7 @@ function createLevelTree(opts, done) {
 
     if (error) {
       done(error);
-    }
-    else {
+    } else {
       done(error, rootNode);
     }
   }
@@ -77,8 +75,7 @@ function createLevelTree(opts, done) {
     function passBackChild(error) {
       if (error) {
         addDone(error);
-      }
-      else {
+      } else {
         addDone(error, childNode);
       }
     }
@@ -95,8 +92,7 @@ function createLevelTree(opts, done) {
     function attachMethodsToChildren(error, children) {
       if (error) {
         getDone(error);
-      }
-      else {
+      } else {
         children.forEach(attachMethodsToNode);
         getDone(error, children);
       }
@@ -109,11 +105,9 @@ function createLevelTree(opts, done) {
     function getChildSubtree(error, child) {
       if (error) {
         getSubtreeDone(error);
-      }
-      else if (!child) {
+      } else if (!child) {
         getSubtreeDone(error, child);
-      }
-      else {
+      } else {
         child.getSubtree(getSubtreeDone);
       }
     }
@@ -129,7 +123,7 @@ function createLevelTree(opts, done) {
     }
 
     if (!equalityFn) {
-      equalityFn = _.isEqual;
+      equalityFn = isEqual;
     }
 
     parent.getChildren(checkChildrenForMatch);
@@ -137,13 +131,11 @@ function createLevelTree(opts, done) {
     function checkChildrenForMatch(error, children) {
       if (error) {
         addDone(error);
-      }
-      else {
-        var existingChild = _.find(children, hasValueEqualToValueToAdd);
+      } else {
+        var existingChild = find(children, hasValueEqualToValueToAdd);
         if (existingChild) {
           addDone(null, existingChild);
-        }
-        else {
+        } else {
           parent.addChild(childValue, addDone);
         }
       }
@@ -159,13 +151,13 @@ function createLevelTree(opts, done) {
   }
 
   function attachMethodsToNode(node) {
-    node.addChild = _.curry(addChildToNode)(node);
-    node.addChildIfNotThere = _.curry(addChildIfNotThere)(node);
-    node.getChildren = _.curry(getChildrenOfParent)(node);
-    node.getChildAtPath = _.curry(getChildAtPath)(treeDb)(node);
-    node.getSubtree = _.curry(getSubtree)(node);
-    node.getSubtreeAtPath = _.curry(getSubtreeAtPath)(node);
-    node.save = _.curry(saveNode)(node);
+    node.addChild = curry(addChildToNode)(node);
+    node.addChildIfNotThere = curry(addChildIfNotThere)(node);
+    node.getChildren = curry(getChildrenOfParent)(node);
+    node.getChildAtPath = curry(getChildAtPath)(treeDb)(node);
+    node.getSubtree = curry(getSubtree)(node);
+    node.getSubtreeAtPath = curry(getSubtreeAtPath)(node);
+    node.save = curry(saveNode)(node);
   }
 }
 
