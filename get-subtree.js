@@ -1,10 +1,10 @@
 var queue = require('queue-async');
-var _ = require('lodash');
+var cloneDeep  = require('lodash.clonedeep');
 
 function getSubtree(node, done) {
   var summary = {
     // If there's performance issues, reconsider cloneDeep.
-    value: _.cloneDeep(node.value)
+    value: cloneDeep(node.value)
   };
 
   node.getChildren(addChildrenToSummary);
