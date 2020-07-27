@@ -1,9 +1,8 @@
 var test = require('tape');
-var createLevelTree = require('../index');
 var populateFreshDb = require('./fixtures/populate-fresh-db');
 var getDbAndRoot = require('./fixtures/get-db-and-root');
 var async = require('async');
-var _ = require('lodash');
+var pick = require('lodash.pick');
 
 var session = {};
 
@@ -62,8 +61,8 @@ test('Update child', function updateChildTest(t) {
     t.equal(typeof savedNode, 'object', 'savedNode is an object.');
     t.equal(savedNode.value.weakness, 'pits', 'savedNode has updated value');
     t.deepEqual(
-      _.pick(child, 'id', 'value', 'children'),
-      _.pick(savedNode, 'id', 'value', 'children'),
+      pick(child, 'id', 'value', 'children'),
+      pick(savedNode, 'id', 'value', 'children'),
       'The saved node is equal to the updated child.'
     );
   }
