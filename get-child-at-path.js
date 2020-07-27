@@ -1,5 +1,4 @@
 var callNextTick = require('call-next-tick');
-var _ = require('lodash');
 
 function getChildAtPath(db, parent, path, done) {
   if (path.length < 1) {
@@ -15,7 +14,7 @@ function getChildAtPath(db, parent, path, done) {
       done(error);
     }
     else {
-      var child = _.find(children, childHasNameFromPath);
+      var child = children.find(childHasNameFromPath);
       if (!child) {
         callNextTick(done, error);
       }

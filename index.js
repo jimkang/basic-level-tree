@@ -1,6 +1,5 @@
 var curry = require('lodash.curry');
 var isEqual = require('lodash.isequal');
-var find = require('lodash.find');
 var Sublevel = require('level-sublevel');
 var idmaker = require('idmaker');
 var queue = require('queue-async');
@@ -132,7 +131,7 @@ function createLevelTree(opts, done) {
       if (error) {
         addDone(error);
       } else {
-        var existingChild = find(children, hasValueEqualToValueToAdd);
+        var existingChild = children.find(hasValueEqualToValueToAdd);
         if (existingChild) {
           addDone(null, existingChild);
         } else {
