@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/jimkang/basic-level-tree",
   "devDependencies": {
-    "async": "^1.2.1",
+    "async": "^2.6.4",
     "immutable": "^3.7.3",
     "level": "^6.0.1",
     "lodash.pluck": "^3.1.2",
